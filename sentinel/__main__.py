@@ -39,7 +39,8 @@ from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
 from sentinel.memory import session_service
-from google.adk.tools.mcp_tool import MCPToolset, StdioServerParameters
+from google.adk.tools.mcp_tool import MCPToolset, StdioConnectionParams
+from mcp.client.stdio import StdioServerParameters
 from google.genai import types
 
 from sentinel.agent import SYSTEM_INSTRUCTION, root_agent
@@ -74,9 +75,11 @@ async def create_runner_with_mcp() -> tuple[Runner, object]:
     exit_stack = contextlib.AsyncExitStack()
 
     mcp_toolset = MCPToolset(
-        connection_params=StdioServerParameters(
-            command=sys.executable,       # same Python interpreter as the agent
-            args=[_MCP_SERVER_SCRIPT],    # the FastMCP server to spawn
+        connection_params=StdioConnectionParams(
+            server_params=StdioServerParameters(
+                command=sys.executable,       # same Python interpreter as the agent
+                args=[_MCP_SERVER_SCRIPT],    # the FastMCP server to spawn
+            )
         )
     )
 
