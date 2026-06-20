@@ -69,12 +69,15 @@ async def chat_endpoint(request: ChatRequest):
             # but for now we just return a message if they try it.
             return ChatResponse(response="Session reset is handled by refreshing the page.")
 
-        # Ensure the session exists (idempotent)
-        await adk_runner.session_service.create_session(
-            app_name="sentinel",
-            user_id=request.user_id,
-            session_id=request.session_id,
-        )
+        # Ensure the session exists. create_session raises ValueError if it already exists.
+        try:
+            await adk_runner.session_service.create_session(
+                app_name="sentinel",
+                user_id=request.user_id,
+                session_id=request.session_id,
+            )
+        except ValueError:
+            pass # Session already exists, which is fine for multi-turn conversations
 
         # Use the canonical run_turn from __main__ to correctly iterate the events
         reply_text = await run_turn(
