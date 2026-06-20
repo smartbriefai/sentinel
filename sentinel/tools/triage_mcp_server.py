@@ -33,6 +33,13 @@ USAGE:
 ──────────────────────────────────────────────────────────────────────────────
 """
 
+import sys
+from pathlib import Path
+
+# Ensure the root 'Sentinel_Capstone' directory is in sys.path so 'sentinel' module is found
+# when this script is executed directly as a subprocess by ADK.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 from mcp.server.fastmcp import FastMCP
 
 # Import the canonical triage logic from the skills module.
