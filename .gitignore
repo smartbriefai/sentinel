@@ -42,3 +42,5 @@ htmlcov/
 # OS artifacts
 .DS_Store
 Thumbs.db
+sentinel/.adk/session.db
+*.db
