@@ -39,7 +39,7 @@ from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
 from sentinel.memory import session_service
-from google.adk.tools.mcp_tool import MCPToolset, StdioConnectionParams
+from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp.client.stdio import StdioServerParameters
 from google.genai import types
 
@@ -57,24 +57,17 @@ _MCP_SERVER_SCRIPT: str = str(
 )
 
 
-async def create_runner_with_mcp() -> tuple[Runner, object]:
+async def create_runner_with_mcp() -> tuple[Runner, McpToolset]:
     """
     Initialise the MCP triage server subprocess and build the full Sentinel runner.
 
     Returns:
-        (runner, exit_stack) - the runner to use for sessions, and the AsyncExitStack
-        that owns the MCP subprocess lifetime. Call `await exit_stack.aclose()` on
+        (runner, mcp_toolset) - the runner to use for sessions, and the McpToolset
+        that owns the MCP subprocess lifetime. Call `mcp_toolset.close()` on
         shutdown to cleanly terminate the subprocess.
     """
-    import contextlib
 
-    # ── Connect to MCP triage server ─────────────────────────────────────────
-    # MCPToolset spawns the server script as a subprocess and communicates via
-    # stdio using the Model Context Protocol. The exit_stack keeps the subprocess
-    # alive for the duration of the session.
-    exit_stack = contextlib.AsyncExitStack()
-
-    mcp_toolset = MCPToolset(
+    mcp_toolset = McpToolset(
         connection_params=StdioConnectionParams(
             server_params=StdioServerParameters(
                 command=sys.executable,       # same Python interpreter as the agent
@@ -83,8 +76,8 @@ async def create_runner_with_mcp() -> tuple[Runner, object]:
         )
     )
 
-    # Enter the toolset context to start the subprocess and get the tools list
-    mcp_tools = await exit_stack.enter_async_context(mcp_toolset)
+    # Get the tools list
+    mcp_tools = await mcp_toolset.get_tools()
 
     # ── Build the agent with MCP tools ───────────────────────────────────────
     # This version uses the real MCP classify_triage instead of the local stub
@@ -114,7 +107,7 @@ async def create_runner_with_mcp() -> tuple[Runner, object]:
         session_service=session_service,
     )
 
-    return runner, exit_stack
+    return runner, mcp_toolset
 
 
 async def run_turn(
@@ -219,13 +212,13 @@ async def main() -> None:
     """
     load_dotenv()  # Ensure GOOGLE_API_KEY is loaded from .env
 
-    runner, exit_stack = await create_runner_with_mcp()
+    runner, mcp_toolset = await create_runner_with_mcp()
 
     try:
         await run_interactive_cli(runner)
     finally:
         # Always tear down the MCP subprocess, even if an exception occurs
-        await exit_stack.aclose()
+        mcp_toolset.close()
 
 
 if __name__ == "__main__":
