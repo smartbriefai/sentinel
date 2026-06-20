@@ -4,10 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatHistory = document.getElementById('chat-history');
     const typingIndicator = document.getElementById('typing-indicator');
 
-    // Create a unique session ID for this window
+    // Create a unique session ID for this window (new conversation)
     const sessionId = 'web-session-' + Math.random().toString(36).substr(2, 9);
-    // User ID is constant for now
-    const userId = 'patient-123';
+    
+    // Get or create a persistent user ID for this browser to test "Returning Patient" memory
+    let userId = localStorage.getItem('sentinel_user_id');
+    if (!userId) {
+        userId = 'patient-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('sentinel_user_id', userId);
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
