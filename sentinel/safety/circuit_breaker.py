@@ -9,9 +9,8 @@ PURPOSE:
     rather than allowing an indefinite loop. This is the "kill switch" per
     spec §5.2 and Section 6, Scenario 5.
 
-STATUS (Phase 1 stub):
-    The turn-counting logic and HITL escalation are fully specified here.
-    Integration into the agent's per-turn flow is wired in Phase 3.
+STATUS:
+    Fully wired as before_agent_callback on both CLI and web server paths.
 
 DESIGN INTENT (spec §5.2):
     - Allows exceptions to propagate (no broad try/except) so ADK 2.0's
