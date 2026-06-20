@@ -80,9 +80,12 @@ async def chat_endpoint(request: ChatRequest):
             # --- CROSS-SESSION MEMORY INJECTION ---
             try:
                 # Find the most recent previous session for this user (excluding the one we just made)
+                app_sessions = adk_runner.session_service.sessions.get("sentinel", {})
+                user_sessions_dict = app_sessions.get(request.user_id, {})
+                
                 user_sessions = [
-                    sess for sess in adk_runner.session_service.sessions.values() 
-                    if sess.user_id == request.user_id and sess.session_id != request.session_id
+                    sess for sess_id, sess in user_sessions_dict.items()
+                    if sess_id != request.session_id
                 ]
                 if user_sessions:
                     # Sort by created_at or just take the last one
@@ -95,8 +98,28 @@ async def chat_endpoint(request: ChatRequest):
                         session_id=request.session_id
                     )
                     
-                    # Copy the history so the model has the context of the previous visit
-                    curr_session.history = list(prev_session.history)
+                    # Extract history from previous session
+                    past_messages = []
+                    for ev in prev_session.events:
+                        if getattr(ev, 'content', None) and getattr(ev.content, 'parts', None):
+                            role = getattr(ev.content, 'role', 'unknown')
+                            for part in ev.content.parts:
+                                if getattr(part, 'text', None):
+                                    past_messages.append(f"{role}: {part.text}")
+                    
+                    past_summary = "\n".join(past_messages)
+                    
+                    # Inject explicit system message at the start of the new session
+                    from google.adk.events import Event
+                    from google.genai import types
+                    context_msg = types.Content(
+                        role="user",
+                        parts=[types.Part(text=f"This is a returning patient. Their previous complaint was:\n{past_summary}\nReference this context when they greet you.")]
+                    )
+                    await adk_runner.session_service.append_event(
+                        curr_session, 
+                        Event(content=context_msg)
+                    )
             except Exception as mem_err:
                 print(f"Failed to inject cross-session memory: {mem_err}")
                 
