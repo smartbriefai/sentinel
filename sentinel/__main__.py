@@ -43,9 +43,8 @@ from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp.client.stdio import StdioServerParameters
 from google.genai import types
 
-from sentinel.agent import SYSTEM_INSTRUCTION, root_agent
+from sentinel.agent import SYSTEM_INSTRUCTION, root_agent, combined_before_agent_callback
 from sentinel.safety.red_flag_callback import red_flag_before_tool_callback
-from sentinel.safety.circuit_breaker import circuit_breaker_before_agent_callback
 from sentinel.skills.conducting_intake import conducting_intake
 from sentinel.skills.generating_summary import generating_summary
 from sentinel.skills.screening_red_flags import screening_red_flags
@@ -94,7 +93,7 @@ async def create_runner_with_mcp() -> tuple[Runner, McpToolset]:
             *mcp_tools,                     # Skill 2 via MCP (classify_triage + get_triage_criteria)
         ],
         before_tool_callback=red_flag_before_tool_callback,
-        before_agent_callback=circuit_breaker_before_agent_callback,
+        before_agent_callback=combined_before_agent_callback,
     )
 
     # Session service and runner
