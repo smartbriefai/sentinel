@@ -76,6 +76,33 @@ async def chat_endpoint(request: ChatRequest):
                 user_id=request.user_id,
                 session_id=request.session_id,
             )
+            
+            # --- CROSS-SESSION MEMORY INJECTION ---
+            # If this is a new session, let's see if the user has a previous session in memory
+            # and copy its history over so Sentinel remembers them!
+            # (Note: InMemorySessionService doesn't have a direct get_by_user_id, so we iterate)
+            try:
+                # Find the most recent previous session for this user (excluding the one we just made)
+                user_sessions = [
+                    sess for sess in adk_runner.session_service._sessions.values() 
+                    if sess.user_id == request.user_id and sess.session_id != request.session_id
+                ]
+                if user_sessions:
+                    # Sort by created_at or just take the last one
+                    prev_session = user_sessions[-1]
+                    
+                    # Get the current new session object
+                    curr_session = await adk_runner.session_service.get_session(
+                        app_name="sentinel", 
+                        user_id=request.user_id, 
+                        session_id=request.session_id
+                    )
+                    
+                    # Copy the history so the model has the context of the previous visit
+                    curr_session.history = list(prev_session.history)
+            except Exception as mem_err:
+                print(f"Failed to inject cross-session memory: {mem_err}")
+                
         except Exception as e:
             if "already exists" not in str(e).lower():
                 raise
