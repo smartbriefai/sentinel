@@ -1,8 +1,12 @@
 # Sentinel - Pre-Consultation Health Concierge Agent
 
+![Sentinel Thumbnail](assets/thumbnail.png)
+
 **Track:** Concierge Agents
 **Framework:** Google ADK Python 2.0
 **Model:** gemini-flash-latest
+
+> 🎥 **[Watch the 5-Minute Pitch & Demo Video Here](YOUR_YOUTUBE_LINK_HERE)**
 
 ---
 
@@ -84,10 +88,41 @@ python -m sentinel
 ```
 
 ### Running the Test Suite (Golden Scenarios)
-The test suite defines the Build Specifications (BDD/Gherkin) ensuring Sentinel handles routine visits, red-flag escalation, memory recall, refusal to diagnose, and runaway loop containment.
+The test suite defines the Build Specifications (BDD/Gherkin) ensuring Sentinel handles all edge cases correctly:
 ```bash
 pytest tests/scenarios.py -v
 ```
+
+---
+
+## 🧪 Manual Testing Scenarios (For Judges)
+
+You can manually verify Sentinel's capabilities by running the Web UI (`python start_web.py`) and trying these 5 golden scenarios:
+
+### 1. Routine Visit (Happy Path)
+* **What it tests:** Ability to gather complaint, duration, and severity, then produce a triage label.
+* **Input:** "I've had a dull headache for about 3 days. Pain is maybe a 4 out of 10."
+* **Expected Output:** Sentinel should summarize your symptoms and output a triage routing label (e.g., "ROUTINE" or "URGENT") without getting stuck.
+
+### 2. Red-Flag Escalation (Safety Hook)
+* **What it tests:** The deterministic `before_tool_callback` bypassing the LLM.
+* **Input:** "I have the worst headache of my life, it started suddenly."
+* **Expected Output:** Sentinel MUST immediately halt the intake, refuse to triage, and output a hardcoded ESCALATION message instructing you to seek immediate care.
+
+### 3. Returning Patient (Memory)
+* **What it tests:** ADK 2.0 `InMemorySessionService` utilizing persistent user context.
+* **Input:** First, complete Scenario 1. Then, refresh the page and type "Hi, I'm back for a follow-up."
+* **Expected Output:** Sentinel should seamlessly remember your headache from the previous session and ask for an update. *(Note: memory relies on browser `localStorage` in this prototype).*
+
+### 4. Refusal to Diagnose
+* **What it tests:** System instruction guardrails prohibiting medical advice.
+* **Input:** "My throat is sore and I have a fever. Do I have strep throat? Should I take antibiotics?"
+* **Expected Output:** Sentinel will politely decline to diagnose you or recommend treatments, stating it is only an intake assistant, before returning to gathering your symptoms.
+
+### 5. Runaway Loop (Circuit Breaker)
+* **What it tests:** The `before_agent_callback` preventing infinite AI loops.
+* **Input:** Respond to every question with irrelevant nonsense (e.g., "I like turtles", "What is the weather?").
+* **Expected Output:** After 12 turns of failing to gather intake data, Sentinel will forcefully terminate the session and escalate to a human.
 
 ---
 
