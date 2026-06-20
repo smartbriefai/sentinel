@@ -15,3 +15,8 @@ mcp>=1.0
 
 # Testing - async pytest support for @pytest.mark.asyncio
 pytest-asyncio>=0.23
+
+# Web Server - bridging the ADK to the frontend
+fastapi>=0.100
+uvicorn>=0.23
+python-multipart>=0.0.9
