@@ -78,13 +78,10 @@ async def chat_endpoint(request: ChatRequest):
             )
             
             # --- CROSS-SESSION MEMORY INJECTION ---
-            # If this is a new session, let's see if the user has a previous session in memory
-            # and copy its history over so Sentinel remembers them!
-            # (Note: InMemorySessionService doesn't have a direct get_by_user_id, so we iterate)
             try:
                 # Find the most recent previous session for this user (excluding the one we just made)
                 user_sessions = [
-                    sess for sess in adk_runner.session_service._sessions.values() 
+                    sess for sess in adk_runner.session_service.sessions.values() 
                     if sess.user_id == request.user_id and sess.session_id != request.session_id
                 ]
                 if user_sessions:
