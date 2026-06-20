@@ -1,0 +1,17 @@
+# ──────────────────────────────────────────────────────────────
+# SENTINEL - pinned dependencies (Section 3 of spec)
+# Install: pip install -r requirements.txt
+# ──────────────────────────────────────────────────────────────
+
+# ADK Python 2.0 - the agent framework (spec-pinned)
+google-adk~=2.0
+
+# Secrets management - load GOOGLE_API_KEY from .env
+python-dotenv>=1.0
+
+# MCP - model-context-protocol SDK for the triage MCP server
+# Provides FastMCP (the high-level server builder) and the MCP client
+mcp>=1.0
+
+# Testing - async pytest support for @pytest.mark.asyncio
+pytest-asyncio>=0.23

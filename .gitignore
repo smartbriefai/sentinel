@@ -1,0 +1,44 @@
+# ──────────────────────────────────────────────────────────────
+# SENTINEL — .gitignore
+# CRITICAL: .env must NEVER be committed. It contains GOOGLE_API_KEY.
+# ──────────────────────────────────────────────────────────────
+
+# Secrets — the only place GOOGLE_API_KEY lives
+.env
+.env.*
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.xml
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
