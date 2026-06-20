@@ -1,9 +1,9 @@
 # ──────────────────────────────────────────────────────────────
-# SENTINEL — .gitignore
+# SENTINEL - .gitignore
 # CRITICAL: .env must NEVER be committed. It contains GOOGLE_API_KEY.
 # ──────────────────────────────────────────────────────────────
 
-# Secrets — the only place GOOGLE_API_KEY lives
+# Secrets - the only place GOOGLE_API_KEY lives
 .env
 .env.*
 

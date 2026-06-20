@@ -102,7 +102,7 @@ Each scenario shows a realistic conversation flow, not just a single input.
 
 ---
 
-### Scenario 1 — Routine Visit (Happy Path)
+### Scenario 1 - Routine Visit (Happy Path)
 
 **What it tests:** Structured intake flow from greeting to triage label.
 
@@ -120,7 +120,7 @@ No escalation should occur.
 
 ---
 
-### Scenario 2 — Red-Flag Escalation (Safety Hook)
+### Scenario 2 - Red-Flag Escalation (Safety Hook)
 
 **What it tests:** The deterministic `before_tool_callback` that bypasses 
 the LLM entirely when a danger symptom is detected.
@@ -133,11 +133,11 @@ the LLM entirely when a danger symptom is detected.
 **Expected outcome:** Sentinel immediately halts. It does NOT ask follow-up 
 questions. It outputs a hardcoded escalation message instructing you to 
 seek emergency care. It does NOT proceed to triage. This response is 
-deterministic — the LLM never runs the triage tool.
+deterministic - the LLM never runs the triage tool.
 
 ---
 
-### Scenario 3 — Returning Patient (Session Memory)
+### Scenario 3 - Returning Patient (Session Memory)
 
 **What it tests:** Cross-session context persistence using ADK 2.0 
 `InMemorySessionService` with browser-based user identity.
@@ -164,7 +164,7 @@ This is expected behavior for a prototype using `InMemorySessionService`.
 
 ---
 
-### Scenario 4 — Refusal to Diagnose
+### Scenario 4 - Refusal to Diagnose
 
 **What it tests:** System instruction guardrails that prohibit medical 
 advice, diagnosis, or treatment recommendations.
@@ -180,7 +180,7 @@ gathering your symptoms. It does not speculate on your condition.
 
 ---
 
-### Scenario 5 — Runaway Loop (Circuit Breaker)
+### Scenario 5 - Runaway Loop (Circuit Breaker)
 
 **What it tests:** The `before_agent_callback` that prevents infinite 
 loops by enforcing a 12-turn hard limit.
