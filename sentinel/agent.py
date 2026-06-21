@@ -51,16 +51,6 @@ def combined_before_agent_callback(callback_context, **kwargs):
     if cb_result:
         return cb_result
         
-    # 2. Memory Injection (only on first turn)
-    if ctx.state.get("turn_count", 0) == 1:
-        app = ctx.session.app_name
-        uid = ctx.session.user_id
-        user_state = session_service.user_state.get(app, {}).get(uid, {})
-        if "past_complaint" in user_state:
-            past = user_state["past_complaint"]
-            msg = f"[SYSTEM MESSAGE: Returning patient. Prior complaint was: '{past}'. Ensure you reference this appropriately in your greeting.]"
-            return Content(role="user", parts=[Part(text=msg)])
-
     return None
 
 # ── Load environment variables ───────────────────────────────────────────────
