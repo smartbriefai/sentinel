@@ -6,7 +6,7 @@
 **Framework:** Google ADK Python 2.0
 **Model:** gemini-flash-latest
 
-> 🎥 **[Watch the 5-Minute Pitch & Demo Video Here](https://youtu.be/EqIDf3BX2fQ)**
+> 🎥 **[Watch the 5-Minute Pitch & Demo Video Here](https://youtu.be/A1-VDOBox7w)**
 
 ---
 
